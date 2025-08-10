@@ -32,12 +32,6 @@ class postbox_class {
 
 
 
-
-
-
-
-
-
     // Menu Page Function
     public function create_menupage_postbox() {
         
@@ -57,6 +51,7 @@ class postbox_class {
         require_once dirname(__DIR__, 1) . '/templates/postbox_admin_area.php';
     }
     
+
 
 
     // this one will create the widget
@@ -88,9 +83,12 @@ class postbox_class {
             echo '<div class="form-group" style="margin-bottom: 15px;">
                 <label for="'.$option_name.'">' . sprintf(__('Display "%s" Widget', 'postbox'), $widget_title) . '</label>
                 <input type="checkbox" id="'.$option_name.'" name="'.$option_name.'" value="1" '.$checked.'>
+                <label for="'.$option_name.'_color">Color Reference</label>
+                <input type="color" id="'.$option_name.'_color" name="'.$option_name.'_color" value="#ffffff">
             </div>';
         });
     }
+
     // return the option name
     private function get_widget_option_name($widget_title) {
         return str_replace(' ', '_', sanitize_title($widget_title)) . '_widget';
@@ -128,6 +126,10 @@ class postbox_class {
             }
         }
     }
+
+
+
+
 
 
 }
