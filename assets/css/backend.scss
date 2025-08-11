@@ -1,0 +1,64 @@
+/*
+
+terminal
+sass --watch assets/css/backend.scss:assets/css/backend.css --style compressed
+
+*/
+
+// dashboard
+.dashboard-widget-post{
+    border: 1px solid black;
+    border-radius: 7px;
+    overflow: hidden;
+    margin-bottom: 10px;
+
+    .colorbox{
+        width: 100%;
+        height: 15px;
+    }
+    .content{
+        display: grid;
+        grid-template-columns: 25% 1fr;
+
+        img{
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        &.img-off{
+            grid-template-columns: 1fr;
+        }
+
+        .text{
+            box-sizing: border-box;
+            padding: 5px;
+        }
+    }
+}
+
+
+// Postbox Settings
+.options{
+    display: grid;
+    grid-template-columns: repeat(3, 500px);
+    grid-gap: 15px;
+
+    .form-group {
+        max-width: 500px;
+        display: grid;
+        box-sizing: border-box;
+        padding: 5px;
+        border: 1px solid #000;
+        border-radius: 7px;
+        background: #fff;
+        font-size: 16px;
+        grid-template-rows: 25px;
+        grid-template-columns: auto 1fr;
+        grid-gap: 0 15px;
+        align-items: center;
+        justify-content: center;
+    }
+}

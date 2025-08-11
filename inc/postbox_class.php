@@ -55,7 +55,8 @@ class postbox_class {
 
 
     // this one will create the widget
-    private function register_widget($widget_title, $dashboard_widget_html) {
+    private function register_widget($widget_title, $dashboard_widget_html, $enable_colour) {
+
         $widget_title_slug = str_replace(' ', '_', sanitize_title($widget_title));
 
         wp_add_dashboard_widget(
@@ -63,7 +64,8 @@ class postbox_class {
             __($widget_title, 'postbox'),
             [$this, 'render_dashboard_widget_content'],
             null,
-            ['html' => $dashboard_widget_html]
+            ['html' => $dashboard_widget_html, 'enable_colour' => $enable_colour],
+            
         );
     }
 
@@ -73,20 +75,52 @@ class postbox_class {
     }
 
     // this one will create the widget option within postbox_admin_area.php
-    private function register_widget_option($widget_title) {
-        $widget_title_slug = str_replace(' ', '_', sanitize_title($widget_title));
+    private function register_widget_option($widget_title, $enable_colour) {
 
-        add_action('render_admin_postbox_options', function() use ($widget_title, $widget_title_slug) {
+        $widget_title_slug = str_replace(' ', '_', sanitize_title($widget_title));
+        $enable_colour = $enable_colour == true ? true : false;
+        
+        add_action('render_admin_postbox_options', function() use ($widget_title, $widget_title_slug, $enable_colour) {
             $option_name = $this->get_widget_option_name($widget_title);
             $checked = checked(1, get_option($option_name), false);
 
-            echo '<div class="form-group" style="margin-bottom: 15px;">
-                <label for="'.$option_name.'">' . sprintf(__('Display "%s" Widget', 'postbox'), $widget_title) . '</label>
-                <input type="checkbox" id="'.$option_name.'" name="'.$option_name.'" value="1" '.$checked.'>
-                <label for="'.$option_name.'_color">Color Reference</label>
-                <input type="color" id="'.$option_name.'_color" name="'.$option_name.'_color" value="#ffffff">
-            </div>';
+            $checked = $checked ? 'checked' : '';
+            $colour = get_option($option_name . '_colour');
+
+            if( !$enable_colour ){
+                $html = '
+                <div class="form-group">
+                    <input type="checkbox" id="'.$option_name.'" name="'.$option_name.'" value="1" '.$checked.'>
+                    <label for="'.$option_name.'">' . sprintf(__('Display "%s" Widget', 'postbox'), $widget_title) . '</label>
+                </div>';
+                echo $html;
+            }
+
+            
         });
+
+        add_action('render_admin_postbox_posts', function() use ($widget_title, $widget_title_slug, $enable_colour) {
+            $option_name = $this->get_widget_option_name($widget_title);
+            $checked = checked(1, get_option($option_name), false);
+
+            $checked = $checked ? 'checked' : '';
+            $colour = get_option($option_name . '_colour');
+
+            if( $enable_colour ){
+                $html = '
+                    <div class="form-group">
+                        <input type="checkbox" id="'.$option_name.'" name="'.$option_name.'" value="1" '.$checked.'>
+                        <label for="'.$option_name.'">' . sprintf(__('Display "%s" Widget', 'postbox'), $widget_title) . '</label>
+                        <input type="color" id="'.$option_name.'_colour" name="'.$option_name.'_colour" value="'.$colour.'">
+                        <label for="'.$option_name.'_colour">Colour Reference</label>
+                    </div>';
+
+                echo $html;
+            }
+
+            
+        });
+
     }
 
     // return the option name
@@ -95,12 +129,12 @@ class postbox_class {
     }
     
     // this one will first render the options and then create the widget case the option is checked
-    public function create_dashboard_widget($widget_title, $dashboard_widget_html) {
+    public function create_dashboard_widget($widget_title, $dashboard_widget_html, $enable_colour ) {
 
-        $this->register_widget_option($widget_title);
+        $this->register_widget_option($widget_title, $enable_colour );
 
         if (get_option($this->get_widget_option_name($widget_title))) {
-            $this->register_widget($widget_title, $dashboard_widget_html);
+            $this->register_widget($widget_title, $dashboard_widget_html, $enable_colour);
         }
     }
     
@@ -111,8 +145,8 @@ class postbox_class {
     
     // setting up default values
     public function init_widget_options() {
-        do_action('register_dashboard_widget', function($title, $html) {
-            $this->register_widget_option($title);
+        do_action('register_dashboard_widget', function($title, $html, $enable_colour) {
+            $this->register_widget_option($title, $enable_colour);
         });
     }
 
